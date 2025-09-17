@@ -19,7 +19,7 @@ git push -u origin main
 
 1. En Coolify, crea un nuevo recurso tipo **Docker Compose**
 2. Conecta tu repositorio de GitHub
-3. En "Docker Compose Location", especifica: `/docker-compose.coolify.yml`
+3. En "Docker Compose Location", usa: `/docker-compose.yml` (archivo por defecto)
 4. Configura las siguientes variables de entorno:
 
 #### Variables de Entorno Requeridas
