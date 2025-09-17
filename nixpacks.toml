@@ -1,0 +1,4 @@
+# Disable Nixpacks auto-detection
+# This forces Coolify to use Docker Compose instead
+[start]
+cmd = "echo 'Use Docker Compose instead of Nixpacks'"

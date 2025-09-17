@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  anythingllm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        ARG_UID: 1000
+        ARG_GID: 1000
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - anythingllm_storage:/app/server/storage
+      - anythingllm_hotdir:/app/collector/hotdir
+      - anythingllm_outputs:/app/collector/outputs
+    environment:
+      # Puerto del servidor
+      SERVER_PORT: ${SERVER_PORT:-3001}
+      STORAGE_DIR: "/app/server/storage"
+
+      # Claves de seguridad IMPORTANTES - Genera strings aleatorios de al menos 32 caracteres
+      SIG_KEY: ${SIG_KEY}
+      SIG_SALT: ${SIG_SALT}
+      JWT_SECRET: ${JWT_SECRET}
+
+      # Autenticación para acceso remoto (IMPORTANTE para producción)
+      AUTH_TOKEN: ${AUTH_TOKEN}
+
+      # Configuración del LLM Provider
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      OPEN_AI_KEY: ${OPEN_AI_KEY}
+      OPEN_MODEL_PREF: ${OPEN_MODEL_PREF:-gpt-4o-mini}
+
+      # Motor de embeddings
+      EMBEDDING_ENGINE: ${EMBEDDING_ENGINE:-native}
+      EMBEDDING_MODEL_PREF: ${EMBEDDING_MODEL_PREF:-Xenova/all-MiniLM-L6-v2}
+
+      # Base de datos vectorial
+      VECTOR_DB: ${VECTOR_DB:-lancedb}
+
+      # Configuración de whisper para audio
+      WHISPER_PROVIDER: ${WHISPER_PROVIDER:-local}
+
+      # TTS Provider
+      TTS_PROVIDER: ${TTS_PROVIDER:-native}
+
+      # Desactivar telemetría si lo deseas
+      DISABLE_TELEMETRY: ${DISABLE_TELEMETRY:-true}
+    ports:
+      - "${HOST_PORT:-3001}:3001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/docker-healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  anythingllm_storage:
+    driver: local
+  anythingllm_hotdir:
+    driver: local
+  anythingllm_outputs:
+    driver: local
